@@ -1,0 +1,9 @@
+<div class="tasks-list">
+  <ng-container *ngIf="tasks$ | async as tasks">
+    <task-item
+      *ngFor="let task of tasks"
+      class="task-item-wrapper"
+      [taskId]="task.id"
+    ></task-item>
+  </ng-container>
+</div>

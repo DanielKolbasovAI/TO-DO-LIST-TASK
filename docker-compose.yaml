@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: mongo-db-service
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    command: [ "--replSet", "rs0" ]
+    networks:
+      - taskList
+
+  mongo-init-replica:
+    image: mongo:6.0
+    depends_on:
+      - mongodb
+    restart: "no"
+    networks:
+      - taskList
+    entrypoint: [ "sh", "-c", "sleep 5 && mongosh --host mongo-db-service:27017 < /init/init-replica.js" ]
+    volumes:
+      - ./init-replica.js:/init/init-replica.js:ro
+
+  db-service:
+    build:
+      context: server/db-service
+    container_name: db-service
+    ports:
+      - "50053:50053"
+    env_file:
+      - server/db-service/.env
+    depends_on:
+      - mongodb
+    networks:
+      - taskList
+
+  logger-service:
+    build:
+      context: server/logger-service
+    container_name: logger-service
+    ports:
+      - "50051:50051"
+    env_file:
+      - server/logger-service/.env
+    volumes:
+      - ./server/logger-service/logs:/usr/src/app/logs
+    networks:
+      - taskList
+
+  auth-service:
+    build:
+      context: server/auth-service
+    container_name: auth-service
+    ports:
+      - "5001:5001"
+    env_file:
+      - server/auth-service/.env
+    depends_on:
+      - mongodb
+    networks:
+      - taskList
+
+  task-service:
+    build: server/task-service
+    container_name: task-service
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - server/task-service/.env
+    depends_on:
+      - db-service
+      - logger-service
+      - auth-service
+    networks:
+      - taskList
+
+  sync-service:
+    build:
+      context: server/sync-service
+    container_name: sync-service
+    ports:
+      - "50055:50055"  # gRPC
+      - "8080:8080"    # WebSocket
+    networks:
+      - taskList
+
+  client:
+    build:
+      context: client
+    container_name: client
+    ports:
+      - "4200:80"
+    depends_on:
+      - task-service
+    networks:
+      - taskList
+
+volumes:
+  mongo_data:
+
+networks:
+  taskList:
+    driver: bridge

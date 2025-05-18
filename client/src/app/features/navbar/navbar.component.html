@@ -1,0 +1,23 @@
+<nav class="navbar">
+  <div class="navbar-left" *ngIf="loggedInUser">
+    <div class="user-menu" (click)="toggleMenu()">
+      <span class="arrow">&#9662;</span>
+      <span class="user-name">
+        {{ loggedInUser.firstName }} {{ loggedInUser.lastName }}, {{ loggedInUser.username }}
+      </span>
+    </div>
+
+    <div class="dropdown" *ngIf="menuOpen">
+      <button (click)="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="navbar-center">
+    <span class="app-title">To-Do List</span>
+  </div>
+  <div class="navbar-right">
+    <button class="nav-btn" (click)="createNewTask()">Add Task</button>
+    <button class="nav-btn" (click)="saveAllChanges()" [disabled]="!(hasChanges$ | async)">Save All</button>
+    <button class="nav-btn" (click)="revertAllChanges()" [disabled]="!(hasChanges$ | async)">Cancel All</button>
+  </div>
+</nav>

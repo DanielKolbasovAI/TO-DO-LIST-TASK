@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package db;
+
+message Task {
+    string id = 1;
+    string title = 2;
+    string description = 3;
+    bool completed = 4;
+    string lockedBy = 5;
+}
+
+message TaskIdRequest {
+    string id = 1;
+}
+
+message CreateTaskRequest {
+    string title = 1;
+    string description = 2;
+}
+message UpdatedTaskRequest {
+    string id = 1;
+    string title = 2;
+    string description = 3;
+    bool completed = 4;
+    string lockedBy = 5;
+    string userId = 6;
+}
+
+message LockUnlockTaskRequest {
+    string id = 1;
+    string userId = 2;
+}
+
+message deleteTaskRequest{
+    string id = 1;
+    string userId = 2;
+}
+
+message GetTasksPagedRequest {
+  int32 page = 1;
+  int32 limit = 2;
+}
+
+message SaveAllTasksRequest{
+    repeated CreateTaskRequest toCreate = 1;
+    repeated UpdatedTaskRequest toUpdate = 2;
+    repeated string toDelete = 3;
+}
+
+message SaveAllTasksResponse {
+    repeated Task updatedTasks = 1;
+}
+
+message Empty {}
+
+
+service DbService {
+    rpc CreateTask (CreateTaskRequest) returns (Task);
+    rpc GetTaskById (TaskIdRequest) returns (Task);
+    rpc GetAllTasks (Empty) returns (stream Task);
+    rpc UpdateTask (UpdatedTaskRequest) returns (Task);
+    rpc DeleteTask (deleteTaskRequest) returns (Empty);
+    rpc GetTasksPaged (GetTasksPagedRequest) returns (stream Task) {}
+    rpc LockTask (LockUnlockTaskRequest) returns (Task);
+    rpc UnlockTask (LockUnlockTaskRequest) returns (Task);
+    rpc SaveAllTasks (SaveAllTasksRequest) returns (SaveAllTasksResponse);
+}

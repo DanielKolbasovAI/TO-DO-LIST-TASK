@@ -1,0 +1,59 @@
+<div *ngIf="task$ | async as task" class="task-item">
+
+  <!--  Header -->
+  <div class="task-header">
+    <span *ngIf="isLockedByOtherUser(task)" class="lock-info">
+    🔒 Locked by {{ (lockedByUser$ | async)?.username || task.lockedBy }}
+  </span>
+    <span *ngIf="!isLockedByOtherUser(task)">&nbsp;</span>
+
+    <div class="status-icons">
+      <ng-container [ngSwitch]="getTaskStatus(task).type">
+        <span *ngSwitchCase="'new'" title="New Task Created">🟢</span>
+        <span *ngSwitchCase="'deleted'" title="Marked for delete">🔴</span>
+        <span *ngSwitchCase="'modified'" title="Task modified">🟠</span>
+      </ng-container>
+    </div>
+  </div>
+
+  <!--  Center  -->
+  <div class="task-body">
+    <ng-container *ngIf="(isTaskEditing$ | async); else viewMode">
+
+      <label>
+        <span>Title:</span>
+        <input [value]="task.title" (input)="onTitleInput(task, $event)" (blur)="onTitleBlur(task, $event)" />
+      </label>
+
+      <label>
+        <span>Description:</span>
+        <textarea [value]="task.description" (input)="onDescriptionInput(task, $event)" (blur)="onDescriptionBlur(task, $event)"></textarea>
+      </label>
+
+      <label>
+        <span>Completed:</span>
+        <input type="checkbox" [checked]="task.completed" (change)="onCheckboxChange(task, $event)" />
+      </label>
+
+    </ng-container>
+
+    <ng-template #viewMode>
+      <div class="field"><strong>Title:</strong> <div>{{ task.title }}</div></div>
+      <div class="field"><strong>Description:</strong> <div>{{ task.description }}</div></div>
+      <div class="field"><strong>Status:</strong> <div>{{ task.completed ? 'Completed' : 'Not Completed' }}</div></div>
+    </ng-template>
+  </div>
+
+  <!-- Footer -->
+  <div class="task-footer">
+    <ng-container *ngIf="(isTaskEditing$ | async); else editButton">
+      <button class="btn save-btn" (click)="saveTask(task)" [disabled]="!(isTaskModified$ | async)">Save</button>
+      <button class="btn cancel-btn" (click)="onCancelClick(task)">Cancel</button>
+      <button class="btn delete-btn" (click)="onDeleteClick(task)">Delete</button>
+    </ng-container>
+
+    <ng-template #editButton>
+      <button class="btn edit-btn" (click)="enterEditMode(task)">Edit</button>
+    </ng-template>
+  </div>
+</div>

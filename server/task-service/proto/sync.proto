@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package sync;
+
+message Task {
+  string id = 1;
+  string title = 2;
+  string description = 3;
+  bool completed = 4;
+  string lockedBy = 5;
+}
+
+message TaskChanges {
+  repeated Task created = 1;
+  repeated Task updated = 2;
+  repeated string deleted = 3;
+}
+
+message Empty {}
+
+service SyncService {
+  rpc BroadcastTaskChange (TaskChanges) returns (Empty);
+}

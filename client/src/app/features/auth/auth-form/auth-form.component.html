@@ -1,0 +1,60 @@
+<div class="auth-form">
+  <h2>{{ title }}</h2>
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="form-group" *ngIf="showFirstName">
+      <input type="text" formControlName="firstName" placeholder="First Name" />
+      <small [class.visible]="isFieldInvalid('firstName')">First Name is required.</small>
+      <small [class.visible]="false"></small>
+    </div>
+
+    <div class="form-group" *ngIf="showLastName">
+      <input type="text" formControlName="lastName" placeholder="Last Name" />
+      <small [class.visible]="isFieldInvalid('lastName')">Last Name is required.</small>
+      <small [class.visible]="false"></small>
+    </div>
+
+    <div class="form-group" *ngIf="showUsername">
+      <input type="text" formControlName="username" placeholder="Username" />
+      <small [class.visible]="isFieldInvalid('username') && form.get('username')?.errors?.['required']">
+        Username is required.
+      </small>
+      <small [class.visible]="isFieldInvalid('username') && form.get('username')?.errors?.['usernameTaken']">
+        This username is already taken.
+      </small>
+    </div>
+
+    <div class="form-group" *ngIf="showEmail">
+      <input type="email" formControlName="email" placeholder="Email" />
+      <small [class.visible]="isFieldInvalid('email') && form.get('email')?.errors?.['required']">
+        Email is required.
+      </small>
+      <small [class.visible]="isFieldInvalid('email') && form.get('email')?.errors?.['email']">
+        Enter a valid email address.
+      </small>
+    </div>
+
+    <div class="form-group">
+      <input type="password" formControlName="password" placeholder="Password" />
+      <small [class.visible]="isFieldInvalid('password') && form.get('password')?.errors?.['required']">
+        Password is required.
+      </small>
+      <small [class.visible]="isFieldInvalid('password') && form.get('password')?.errors?.['minlength']">
+        Password must be at least 8 characters.
+      </small>
+    </div>
+
+    <div class="form-group" *ngIf="showConfirmPassword">
+      <input type="password" formControlName="confirmPassword" placeholder="Confirm Password" />
+      <small [class.visible]="isFieldInvalid('confirmPassword')">Confirm Password is required.</small>
+      <small [class.visible]="form.errors?.['passwordsMismatch'] && form.get('confirmPassword')?.touched">
+        Passwords do not match.
+      </small>
+    </div>
+
+    <button type="submit">{{ buttonLabel }}</button>
+  </form>
+
+  <p class="switch-link">
+    <a [routerLink]="linkRoute">{{ linkText }}</a>
+  </p>
+</div>

@@ -1,0 +1,12 @@
+<app-auth-form
+  [title]="'Register'"
+  [buttonLabel]="'Register'"
+  [linkText]="'Already have an account? Login'"
+  [linkRoute]="'/login'"
+  [showUsername]="true"
+  [showEmail]="true"
+  [showFirstName]="true"
+  [showLastName]="true"
+  [showConfirmPassword]="true"
+  (submitForm)="register($event)">
+</app-auth-form>

@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package logger;
+
+enum LogLevel {
+    DEBUG = 0;
+    INFO = 1;
+    WARN = 2;
+    ERROR = 3;
+    FATAL = 4;
+}
+
+message LogRequest {
+    string serviceName = 1;
+    string message = 2;
+    LogLevel level = 3;
+    string timestamp = 4;
+}
+
+message LogResponse {
+    bool success = 1;
+}
+
+message ChangeLogLevelRequest {
+    LogLevel newLevel = 1;
+}
+message ChangeLogLevelResponse {
+    bool success = 1;
+    LogLevel currentLevel = 2;
+}
+
+service LoggerService {
+    rpc Log (LogRequest) returns (LogResponse);
+    rpc ChangeLogLevel (ChangeLogLevelRequest) returns (ChangeLogLevelResponse);
+}
